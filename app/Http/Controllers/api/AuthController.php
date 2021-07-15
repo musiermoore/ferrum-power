@@ -18,9 +18,10 @@ class AuthController extends Controller
         $data["password"] = bcrypt($data["password"]);
 
         $user = User::create($data);
+        $user->assignRole($data["role"]);
 
         return response()->json([
-            'code'      => 200,
+            'code'      => 201,
             'message'   => "Пользователь создан.",
             'user'      => UserResource::make($user),
         ])->setStatusCode(201);
@@ -30,7 +31,7 @@ class AuthController extends Controller
     {
         $data = $request->all();
 
-        $user = $user = User::where('login', $data['login'])->first();
+        $user = User::where('login', $data['login'])->first();
 
         if ( !$user || !Hash::check($data['password'], $user->password)) {
             return response()->json([

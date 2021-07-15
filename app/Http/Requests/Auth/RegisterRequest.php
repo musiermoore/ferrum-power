@@ -29,6 +29,7 @@ class RegisterRequest extends FormRequest
             'patronymic'    => 'required|string|max:64',
             'login'         => 'required|string|max:32|unique:users',
             'password'      => 'required|string|max:64|confirmed',
+            'role'          => 'required|integer|exists:spatie_roles,id'
         ];
     }
 }
