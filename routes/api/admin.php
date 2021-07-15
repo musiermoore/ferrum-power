@@ -18,12 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/login', [\App\Http\Controllers\api\AuthController::class, 'login']);
-Route::get('/logout', [\App\Http\Controllers\api\AuthController::class, 'logout'])->middleware('auth:api');
+Route::get('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
+Route::get('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'])->middleware('auth:api');
 
 /*
  * Admin's routes
  */
 Route::group(['middleware' => ['role:admin']], function () {
-    Route::get('/register', [\App\Http\Controllers\api\AuthController::class, 'register']);
+    Route::get('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 });
