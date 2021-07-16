@@ -10,13 +10,10 @@ use App\Http\Resources\CategoryProductResource;
 use App\Http\Resources\ProductResource;
 use App\Models\CategoryProduct;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryProductController extends Controller
 {
-    const DEFAULT_CATEGORY = 1;
-
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +31,7 @@ class CategoryProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\CategoryProductCreateRequest  $request
+     * @param CategoryProductCreateRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CategoryProductCreateRequest $request)
@@ -73,14 +70,15 @@ class CategoryProductController extends Controller
 
         return response()->json([
             'code'      => 200,
-            'category'  => CategoryProductCollection::make($category),
+            'category'  => CategoryProductResource::make($category),
+            'products'  => ProductResource::collection($category->products),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\CategoryProductUpdateRequest  $request
+     * @param  CategoryProductUpdateRequest  $request
      * @param  \App\Models\CategoryProduct  $id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -89,6 +87,24 @@ class CategoryProductController extends Controller
         $data = $request->all();
 
         $category =  CategoryProduct::find($id);
+
+        if ($category->id == $data["parent_id"]) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Категория не должна ссылаться сама на себя."
+                ],
+            ]);
+        }
+
+        if (empty($category)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Категория не найдена."
+                ],
+            ]);
+        }
 
         $category->update($data);
         $category->save();
@@ -107,6 +123,15 @@ class CategoryProductController extends Controller
      */
     public function destroy($id)
     {
+        if ($id == CategoryProduct::DEFAULT_CATEGORY_ID) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Главную категорию удалить нельзя."
+                ],
+            ]);
+        }
+
         $category =  CategoryProduct::find($id);
 
         if (empty($category)) {
@@ -118,7 +143,7 @@ class CategoryProductController extends Controller
             ]);
         }
 
-        $products = Product::where('category_id', $id)->update(['category_id' => self::DEFAULT_CATEGORY]);
+        Product::setDefaultCategoryForProduct($id);
 
         $category->delete();
 

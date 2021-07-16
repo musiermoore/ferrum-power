@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\CategoryProductCollection;
+use App\Http\Resources\CategoryProductResource;
+use App\Http\Resources\ProductResource;
 use App\Models\CategoryProduct;
 
 class CategoryProductController extends BaseController
@@ -32,7 +34,8 @@ class CategoryProductController extends BaseController
         $category =  CategoryProduct::find($id);
 
         return response()->json([
-            'category'  => CategoryProductCollection::make($category),
+            'category'  => CategoryProductResource::make($category),
+            'products'  => ProductResource::collection($category->products),
         ]);
     }
 }
