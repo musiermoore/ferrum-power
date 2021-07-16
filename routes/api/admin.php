@@ -27,3 +27,13 @@ Route::get('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 });
+
+/*
+ * Operator's routes
+ */
+Route::group(['middleware' => ['role:admin|operator']], function () {
+    Route::resource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
+});
+
+
+
