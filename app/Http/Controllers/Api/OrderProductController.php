@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 
-class OrderProductController extends Controller
+class OrderProductController extends BaseController
 {
     /**
      * Display a listing of the resource.
