@@ -2,85 +2,37 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryProductCollection;
 use App\Models\CategoryProduct;
-use Illuminate\Http\Request;
 
-class CategoryProductController extends Controller
+class CategoryProductController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
-    }
+        $categories =  CategoryProduct::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return response()->json([
+            'categories' => CategoryProductCollection::make($categories),
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\CategoryProduct  $categoryProduct
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\CategoryProduct $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(CategoryProduct $categoryProduct)
+    public function show($id)
     {
-        //
-    }
+        $category =  CategoryProduct::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\CategoryProduct  $categoryProduct
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CategoryProduct $categoryProduct)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CategoryProduct  $categoryProduct
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CategoryProduct $categoryProduct)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\CategoryProduct  $categoryProduct
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CategoryProduct $categoryProduct)
-    {
-        //
+        return response()->json([
+            'category'  => CategoryProductCollection::make($category),
+        ]);
     }
 }
