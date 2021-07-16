@@ -11,6 +11,8 @@ class CategoryProduct extends Model
 
     public $timestamps = false;
 
+    const DEFAULT_CATEGORY_ID = 1;
+
     protected $fillable = [
         'parent_id',
         'title',
