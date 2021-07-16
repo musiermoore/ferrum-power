@@ -13,4 +13,9 @@ class Product extends Model
     {
         return $this->belongsTo(CategoryProduct::class, 'category_id', 'id');
     }
+
+    public static function setDefaultCategoryForProduct($categoryId)
+    {
+        Product::where('category_id', $categoryId)->update(['category_id' => CategoryProduct::DEFAULT_CATEGORY_ID]);
+    }
 }
