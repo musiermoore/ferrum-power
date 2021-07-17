@@ -33,6 +33,7 @@ Route::group(['middleware' => ['role:admin']], function () {
  */
 Route::group(['middleware' => ['role:admin|operator']], function () {
     Route::resource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
+    Route::resource('/products', \App\Http\Controllers\Api\Admin\ProductController::class);
 });
 
 
