@@ -65,7 +65,7 @@ class CategoryProductController extends Controller
                     'code'      => 404,
                     'message'   => "Категория не найдена."
                 ],
-            ]);
+            ])->setStatusCode(404);
         }
 
         return response()->json([
@@ -84,6 +84,15 @@ class CategoryProductController extends Controller
      */
     public function update(CategoryProductUpdateRequest $request, $id)
     {
+        if ($id == CategoryProduct::DEFAULT_CATEGORY_ID) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Главную категорию изменить нельзя."
+                ],
+            ])->setStatusCode(422);
+        }
+
         $data = $request->all();
 
         $category =  CategoryProduct::find($id);
@@ -94,7 +103,7 @@ class CategoryProductController extends Controller
                     'code'      => 422,
                     'message'   => "Категория не должна ссылаться сама на себя."
                 ],
-            ]);
+            ])->setStatusCode(422);
         }
 
         if (empty($category)) {
@@ -103,7 +112,20 @@ class CategoryProductController extends Controller
                     'code'      => 404,
                     'message'   => "Категория не найдена."
                 ],
-            ]);
+            ])->setStatusCode(404);
+        }
+
+        $checkTitle = CategoryProduct::where('id', '!=', $id)
+            ->where('title', $data['title'])
+            ->count();
+
+        if (empty($checkTitle)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Продукт с таким названием уже существует."
+                ],
+            ])->setStatusCode(422);
         }
 
         $category->update($data);
@@ -129,7 +151,7 @@ class CategoryProductController extends Controller
                     'code'      => 422,
                     'message'   => "Главную категорию удалить нельзя."
                 ],
-            ]);
+            ])->setStatusCode(422);
         }
 
         $category =  CategoryProduct::find($id);
@@ -140,7 +162,7 @@ class CategoryProductController extends Controller
                     'code'      => 404,
                     'message'   => "Категория не найдена."
                 ],
-            ]);
+            ])->setStatusCode(404);
         }
 
         Product::setDefaultCategoryForProduct($id);
