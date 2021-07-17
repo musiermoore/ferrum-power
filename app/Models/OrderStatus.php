@@ -10,4 +10,6 @@ class OrderStatus extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+    const DEFAULT_ORDER_STATUS_ID = 1;
 }
