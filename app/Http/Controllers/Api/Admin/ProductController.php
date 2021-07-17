@@ -42,7 +42,7 @@ class ProductController extends BaseController
 
         return response()->json([
             'code'      => 201,
-            'category'  => ProductResource::make($product),
+            'product'  => ProductResource::make($product),
         ])->setStatusCode(201);
     }
 
