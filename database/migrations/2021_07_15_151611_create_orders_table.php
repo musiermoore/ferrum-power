@@ -21,10 +21,8 @@ class CreateOrdersTable extends Migration
             $table->string('description');
             $table->string('address');
 
-            $table->integer('order_price')->default(0);
-
-            $table->foreignId('order_status_id');
-            $table->foreignId('operator_id');
+            $table->foreignId('order_status_id')->default(1);
+            $table->foreignId('operator_id')->nullable();
 
             $table->timestamps();
 
