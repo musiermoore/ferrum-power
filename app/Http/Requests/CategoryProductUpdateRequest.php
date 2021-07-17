@@ -25,9 +25,10 @@ class CategoryProductUpdateRequest extends FormRequest
     {
         return [
             'parent_id'     => ['required', 'exists:category_products,id'],
-            'title'         => ['string', 'min:2', 'max:128', 'unique:category_products,title'],
+            'title'         => ['required', 'string', 'min:2', 'max:128', 'unique:category_products,title'],
             'slug'          => ['string', 'min:2', 'max:128', 'unique:category_products,slug'],
             'description'   => ['string', 'max:255'],
+            'image_path'    => ['string'],
         ];
     }
 }
