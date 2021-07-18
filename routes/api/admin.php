@@ -32,9 +32,15 @@ Route::group(['middleware' => ['role:admin']], function () {
  * Operator's routes
  */
 Route::group(['middleware' => ['role:admin|operator']], function () {
-    Route::resource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
-    Route::resource('/products', \App\Http\Controllers\Api\Admin\ProductController::class);
-    Route::resource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class);
+    Route::apiResource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
+    Route::apiResource('/products', \App\Http\Controllers\Api\Admin\ProductController::class);
+    Route::apiResource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class);
+
+    Route::group(['prefix' => '/orders/{orderId}'], function () {
+        Route::apiResource('/products', \App\Http\Controllers\Api\OrderProductController::class, ['parameters' => [
+            'products' => 'productId',
+        ]])->except('show');
+    });
 });
 
 

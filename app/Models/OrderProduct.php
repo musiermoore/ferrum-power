@@ -40,16 +40,16 @@ class OrderProduct extends Model
         }
     }
 
-    public static function removeProductFromOrder($order, $product)
+    public static function removeProductFromOrder($order, $productId)
     {
-        $order->products()->wherePivot('product_id', $product["product_id"])->detach();
+        $order->products()->wherePivot('product_id', $productId)->detach();
     }
 
-    public static function updateProductInOrder($order, $product)
+    public static function updateProductInOrder($order, $productId, $quantity)
     {
-        $productPrice = Product::getProductPrice($product["product_id"]);
+        $productPrice = Product::getProductPrice($productId);
         $order->products()
-            ->where('product_id', $product["product_id"])
-            ->update(['quantity' => $product["quantity"], 'full_price' => $productPrice * $product["quantity"]]);
+            ->where('product_id', $productId)
+            ->update(['quantity' => $quantity, 'full_price' => $productPrice * $quantity]);
     }
 }
