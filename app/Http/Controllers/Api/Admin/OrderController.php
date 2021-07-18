@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Orders\OrderCreateRequest;
 use App\Http\Requests\Orders\OrderSearchRequest;
+use App\Http\Requests\Orders\OrderUpdateRequest;
 use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductResource;
@@ -12,7 +13,6 @@ use App\Models\Order;
 use App\Models\OrderPrice;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use Illuminate\Http\Request;
 
 class OrderController extends BaseController
 {
@@ -27,7 +27,8 @@ class OrderController extends BaseController
         $orders = Order::searchOrdersByQuery($request->query());
 
         return response()->json([
-            'orders' => OrderCollection::make($orders),
+            'code'      => 200,
+            'orders'    => OrderCollection::make($orders),
         ]);
     }
 
@@ -59,12 +60,13 @@ class OrderController extends BaseController
         $order->setDefaultOrderStatus();
 
         if ($checkProducts) {
-            OrderProduct::addProductToOrder($order, $data["products"]);
+            OrderProduct::addProductsToOrder($order, $data["products"]);
             OrderPrice::setPriceToOrder($order);
         }
 
         return response()->json([
             'code'      => 201,
+            'message'   => "Заказ отправлен. Номер заказа: №{$order->id}.",
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
         ])->setStatusCode(201);
@@ -90,21 +92,43 @@ class OrderController extends BaseController
         }
 
         return response()->json([
-            'orders' => OrderResource::make($order),
-            'products' => ProductResource::collection($order->products),
+            'code'      => 200,
+            'orders'    => OrderResource::make($order),
+            'products'  => ProductResource::collection($order->products),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
+     * @param  OrderUpdateRequest  $request
+     * @param  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Order $order)
+    public function update(OrderUpdateRequest $request, $id)
     {
-        //
+        $data = $request->input();
+
+        $order = Order::find($id);
+
+        if (empty($order)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Заказ не найден."
+                ],
+            ])->setStatusCode(404);
+        }
+
+        $order->update($data);
+        $order->save();
+
+        return response()->json([
+            'code'      => 201,
+            'message'   => "Данные заказа №{$order->id} изменены.",
+            'order'     => OrderResource::make($order),
+            'products'  => ProductResource::collection($order->products),
+        ])->setStatusCode(201);
     }
 
     /**
@@ -113,8 +137,33 @@ class OrderController extends BaseController
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Order $order)
+    public function destroy($id)
     {
-        //
+        $order = Order::find($id);
+
+        if (empty($order)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Заказ не найден."
+                ],
+            ])->setStatusCode(404);
+        }
+
+        if ($order->order_status_id != 3 || $order->order_status_id != 4) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Незавершенный заказ удалить нельзя."
+                ],
+            ])->setStatusCode(404);
+        }
+
+        $order->delete();
+
+        return response()->json([
+            'code'      => 200,
+            'message'   => "Заказ №{$id} был удален.",
+        ]);
     }
 }
