@@ -93,7 +93,7 @@ class OrderController extends BaseController
 
         return response()->json([
             'code'      => 200,
-            'orders'    => OrderResource::make($order),
+            'order'    => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
         ]);
     }
