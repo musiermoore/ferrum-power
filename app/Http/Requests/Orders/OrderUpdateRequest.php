@@ -24,8 +24,8 @@ class OrderUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'          => ['required', 'max:64', 'regex:/^[a-zA-ZА-ЯЁа-яё]*$/'],
-            'phone'         => ['required', 'max:32', 'regex:/^[0-9()-+ ]*$/'],
+            'name'          => ['required', 'max:64', 'regex:/^[a-zA-ZА-ЯЁа-яё \S]+$/'],
+            'phone'         => ['required', 'max:32', 'regex:/^[0-9()-+ \S]*$/'],
             'email'         => ['required', 'email'],
             'description'   => ['required', 'min:5'],
             'address'       => ['required', 'string'],
