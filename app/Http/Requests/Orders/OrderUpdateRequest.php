@@ -29,7 +29,6 @@ class OrderUpdateRequest extends FormRequest
             'email'         => ['required', 'email'],
             'description'   => ['required', 'min:5'],
             'address'       => ['required', 'string'],
-            'products'      => ['array'],
         ];
     }
 }
