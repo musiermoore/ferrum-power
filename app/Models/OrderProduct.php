@@ -11,7 +11,24 @@ class OrderProduct extends Model
 
     public $timestamps = false;
 
-    public static function addProductToOrder($order, $products)
+    protected $fillable = [
+        'product_id',
+        'order_id',
+        'full_price',
+        'quantity'
+    ];
+
+    public static function addProductToOrder($order, $product)
+    {
+        $productPrice = Product::getProductPrice($product["product_id"]);
+
+        $order->products()->attach(array($product["product_id"] => [
+            'quantity'   => $product["quantity"],
+            'full_price' => $product["quantity"] * $productPrice,
+        ]));
+    }
+
+    public static function addProductsToOrder($order, $products)
     {
         foreach ($products as $product) {
             $productPrice = Product::getProductPrice($product["product_id"]);
@@ -26,5 +43,13 @@ class OrderProduct extends Model
     public static function removeProductFromOrder($order, $product)
     {
         $order->products()->wherePivot('product_id', $product["product_id"])->detach();
+    }
+
+    public static function updateProductInOrder($order, $product)
+    {
+        $productPrice = Product::getProductPrice($product["product_id"]);
+        $order->products()
+            ->where('product_id', $product["product_id"])
+            ->update(['quantity' => $product["quantity"], 'full_price' => $productPrice * $product["quantity"]]);
     }
 }
