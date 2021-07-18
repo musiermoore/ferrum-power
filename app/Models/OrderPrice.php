@@ -17,7 +17,12 @@ class OrderPrice extends Model
 
     public static function setPriceToOrder($order)
     {
-        $orderPrice = $order->products()->sum('full_price');
-        $order->orderPrice()->create(['order_price' => $orderPrice]);
+        $orderPrice = 0;
+
+        if ($order->products()->count() != 0) {
+            $orderPrice = $order->products()->sum('full_price');
+        }
+
+        $order->orderPrice()->updateOrCreate(['order_id' => $order->id], ['order_price' => $orderPrice]);
     }
 }
