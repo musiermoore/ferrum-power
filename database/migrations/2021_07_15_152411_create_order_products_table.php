@@ -20,8 +20,10 @@ class CreateOrderProductsTable extends Migration
             $table->integer('quantity');
             $table->integer('full_price'); // price_for_one_product * quantity
 
-            $table->foreign('order_id')->references('id')->on('orders');
-            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('order_id')->references('id')->on('orders')
+                ->cascadeOnDelete();
+            $table->foreign('product_id')->references('id')->on('products')
+                ->cascadeOnDelete();
         });
     }
 

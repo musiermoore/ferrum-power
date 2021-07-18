@@ -18,7 +18,7 @@ class CreateOrdersTable extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('email');
-            $table->string('description');
+            $table->text('description');
             $table->string('address');
 
             $table->foreignId('order_status_id')->default(1);
