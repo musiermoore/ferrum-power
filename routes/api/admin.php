@@ -26,6 +26,8 @@ Route::get('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'
  */
 Route::group(['middleware' => ['role:admin']], function () {
     Route::get('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
+    Route::patch('/operator/change', [\App\Http\Controllers\Api\Admin\OrderController::class, 'changeOrderOperator'])
+        ->prefix('/orders/{orderId}');
 });
 
 /*
@@ -40,6 +42,9 @@ Route::group(['middleware' => ['role:admin|operator']], function () {
         Route::apiResource('/products', \App\Http\Controllers\Api\Admin\OrderProductController::class, ['parameters' => [
             'products' => 'productId',
         ]])->except('show');
+        Route::patch('/operator/set', [\App\Http\Controllers\Api\Admin\OrderController::class, 'setOperatorToOrder']);
+        Route::patch('/operator/unset', [\App\Http\Controllers\Api\Admin\OrderController::class, 'unsetOperatorToOrder']);
+        Route::patch('/operator/change', [\App\Http\Controllers\Api\Admin\OrderController::class, 'changeOrderOperator']);
     });
 });
 
