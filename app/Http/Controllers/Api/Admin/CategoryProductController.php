@@ -58,6 +58,7 @@ class CategoryProductController extends Controller
     public function show($id)
     {
         $category =  CategoryProduct::find($id);
+        $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
 
         if (empty($category)) {
             return response()->json([
@@ -69,9 +70,10 @@ class CategoryProductController extends Controller
         }
 
         return response()->json([
-            'code'      => 200,
-            'category'  => CategoryProductResource::make($category),
-            'products'  => ProductResource::collection($category->products),
+            'code'              => 200,
+            'category'          => CategoryProductResource::make($category),
+            'child_categories'  => CategoryProductResource::collection($childCategories),
+            'products'          => ProductResource::collection($category->products),
         ]);
     }
 
@@ -115,15 +117,29 @@ class CategoryProductController extends Controller
             ])->setStatusCode(404);
         }
 
-        $checkTitle = CategoryProduct::where('id', '!=', $id)
+        $checkTitle = CategoryProduct::query()
+            ->whereNotIn('id', [$id])
             ->where('title', $data['title'])
             ->count();
 
-        if (empty($checkTitle)) {
+        if (! empty($checkTitle)) {
             return response()->json([
                 'error' => [
                     'code'      => 422,
                     'message'   => "Продукт с таким названием уже существует."
+                ],
+            ])->setStatusCode(422);
+        }
+
+        $checkSlug = CategoryProduct::whereNotIn('id', [$id])
+            ->where('slug', $data['slug'])
+            ->count();
+
+        if (! empty($checkSlug)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Продукт с такой ссылкой уже существует."
                 ],
             ])->setStatusCode(422);
         }
