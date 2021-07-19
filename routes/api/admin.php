@@ -34,7 +34,7 @@ Route::group(['middleware' => ['role:admin']], function () {
 Route::group(['middleware' => ['role:admin|operator']], function () {
     Route::apiResource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
     Route::apiResource('/products', \App\Http\Controllers\Api\Admin\ProductController::class);
-    Route::apiResource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class);
+    Route::apiResource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class)->except('store');
 
     Route::group(['prefix' => '/orders/{orderId}'], function () {
         Route::apiResource('/products', \App\Http\Controllers\Api\Admin\OrderProductController::class, ['parameters' => [

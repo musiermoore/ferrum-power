@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::resource('/categories', \App\Http\Controllers\Api\CategoryProductController::class)->only(['index', 'show']);
-Route::resource('/products', \App\Http\Controllers\Api\ProductController::class)->only(['index', 'show']);
+Route::apiResource('/categories', \App\Http\Controllers\Api\CategoryProductController::class)->only(['index', 'show']);
+Route::apiResource('/products', \App\Http\Controllers\Api\ProductController::class)->only(['index', 'show']);
+Route::apiResource('/orders', \App\Http\Controllers\Api\ProductController::class)->only(['store']);
 
 
