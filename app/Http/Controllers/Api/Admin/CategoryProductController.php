@@ -58,6 +58,7 @@ class CategoryProductController extends Controller
     public function show($id)
     {
         $category =  CategoryProduct::find($id);
+        $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
 
         if (empty($category)) {
             return response()->json([
@@ -69,9 +70,10 @@ class CategoryProductController extends Controller
         }
 
         return response()->json([
-            'code'      => 200,
-            'category'  => CategoryProductResource::make($category),
-            'products'  => ProductResource::collection($category->products),
+            'code'              => 200,
+            'category'          => CategoryProductResource::make($category),
+            'child_categories'  => CategoryProductResource::collection($childCategories),
+            'products'          => ProductResource::collection($category->products),
         ]);
     }
 

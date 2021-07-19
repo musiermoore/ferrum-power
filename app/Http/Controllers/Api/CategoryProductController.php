@@ -32,9 +32,20 @@ class CategoryProductController extends BaseController
     public function show($id)
     {
         $category =  CategoryProduct::find($id);
+        $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
+
+        if (empty($category)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Категория не найдена."
+                ],
+            ])->setStatusCode(404);
+        }
 
         return response()->json([
             'category'  => CategoryProductResource::make($category),
+            'child_categories'  => CategoryProductResource::collection($childCategories),
             'products'  => ProductResource::collection($category->products),
         ]);
     }
