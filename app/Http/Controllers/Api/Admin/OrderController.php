@@ -172,7 +172,7 @@ class OrderController extends BaseController
             return response()->json([
                 'error' => [
                     'code'      => 403,
-                    'message'   => "Вы не можете снять оператора, с чужого заказа."
+                    'message'   => "Вы не можете убрать оператора с чужого заказа."
                 ],
             ])->setStatusCode(403);
         }
@@ -181,7 +181,7 @@ class OrderController extends BaseController
             return response()->json([
                 'error' => [
                     'code'      => 422,
-                    'message'   => "Вы не можете сняться с заказа, пока он не завершен."
+                    'message'   => "Вы не можете отказаться от заказа, пока он не завершён."
                 ],
             ])->setStatusCode(422);
         }
@@ -190,7 +190,7 @@ class OrderController extends BaseController
             return response()->json([
                 'error' => [
                     'code'      => 403,
-                    'message'   => "Вы не являетесь оператором и не можете сняться с заказа."
+                    'message'   => "Вы не являетесь оператором и не можете отказаться от заказа."
                 ],
             ])->setStatusCode(403);
         }
@@ -200,7 +200,7 @@ class OrderController extends BaseController
 
         return response()->json([
             'code'      => 200,
-            'message'   => "Оператор снят с заказа."
+            'message'   => "Оператор убран с заказа."
         ]);
     }
 

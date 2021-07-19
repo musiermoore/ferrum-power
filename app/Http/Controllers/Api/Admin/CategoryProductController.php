@@ -24,6 +24,7 @@ class CategoryProductController extends Controller
         $categories =  CategoryProduct::all();
 
         return response()->json([
+            'code'       => 200,
             'categories' => CategoryProductCollection::make($categories),
         ]);
     }
@@ -169,7 +170,7 @@ class CategoryProductController extends Controller
             return response()->json([
                 'error' => [
                     'code'      => 422,
-                    'message'   => "Главную категорию удалить нельзя."
+                    'message'   => "Общую категорию удалить нельзя."
                 ],
             ])->setStatusCode(422);
         }
@@ -191,7 +192,7 @@ class CategoryProductController extends Controller
 
         return response()->json([
             'code'      => 200,
-            'message'   => "Категория №{$id} была удалена. Все затронутые товары были перенесены в главную категорию.",
+            'message'   => "Категория №{$id} была удалена. Все затронутые товары данной категории были перенесены в общую категорию.",
         ]);
     }
 }

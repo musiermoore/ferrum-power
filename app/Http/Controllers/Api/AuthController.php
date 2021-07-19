@@ -36,8 +36,7 @@ class AuthController extends BaseController
             return response()->json([
                 'error' => [
                     'code'       => 401,
-                    'message'    => "Unauthorized",
-                    'errors'     => "Такого пользователя не существует или введен неверный пароль.",
+                    'message'    => "Такого пользователя не существует или введен неверный пароль.",
                 ],
             ], 401);
         }

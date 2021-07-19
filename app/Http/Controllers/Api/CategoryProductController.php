@@ -19,7 +19,8 @@ class CategoryProductController extends BaseController
         $categories =  CategoryProduct::all();
 
         return response()->json([
-            'categories' => CategoryProductCollection::make($categories),
+            'code'          => 200,
+            'categories'    => CategoryProductCollection::make($categories),
         ]);
     }
 
@@ -44,9 +45,10 @@ class CategoryProductController extends BaseController
         }
 
         return response()->json([
-            'category'  => CategoryProductResource::make($category),
+            'code'              => 200,
+            'category'          => CategoryProductResource::make($category),
             'child_categories'  => CategoryProductResource::collection($childCategories),
-            'products'  => ProductResource::collection($category->products),
+            'products'          => ProductResource::collection($category->products),
         ]);
     }
 }

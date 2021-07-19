@@ -21,7 +21,8 @@ class ProductController extends BaseController
         $products =  Product::all();
 
         return response()->json([
-            'products' => ProductResource::collection($products),
+            'code'      => 200,
+            'products'  => ProductResource::collection($products),
         ]);
     }
 
