@@ -131,6 +131,10 @@ class CategoryProductController extends Controller
             ])->setStatusCode(422);
         }
 
+        if (! array_key_exists('slug', $data)) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+
         $checkSlug = CategoryProduct::whereNotIn('id', [$id])
             ->where('slug', $data['slug'])
             ->count();
