@@ -130,6 +130,19 @@ class CategoryProductController extends Controller
             ])->setStatusCode(422);
         }
 
+        $checkSlug = CategoryProduct::where('id', '!=', $id)
+            ->where('slug', $data['slug'])
+            ->count();
+
+        if (empty($checkSlug)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 422,
+                    'message'   => "Продукт с такой ссылкой уже существует."
+                ],
+            ])->setStatusCode(422);
+        }
+
         $category->update($data);
         $category->save();
 
