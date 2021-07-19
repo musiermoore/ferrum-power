@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Orders\OrderProductCreateRequest;
 use App\Http\Requests\Orders\OrderProductUpdateRequest;
 use App\Http\Resources\OrderResource;

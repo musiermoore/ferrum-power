@@ -37,7 +37,7 @@ Route::group(['middleware' => ['role:admin|operator']], function () {
     Route::apiResource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class);
 
     Route::group(['prefix' => '/orders/{orderId}'], function () {
-        Route::apiResource('/products', \App\Http\Controllers\Api\OrderProductController::class, ['parameters' => [
+        Route::apiResource('/products', \App\Http\Controllers\Api\Admin\OrderProductController::class, ['parameters' => [
             'products' => 'productId',
         ]])->except('show');
     });
