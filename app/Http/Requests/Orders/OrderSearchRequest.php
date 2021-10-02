@@ -24,8 +24,8 @@ class OrderSearchRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'  => ['required', 'max:64', 'regex:/^[a-zA-ZА-ЯЁа-яё \S]+$/'],
-            'phone' => ['required', 'max:32', 'regex:/^[0-9()-+ \S]*$/'],
+            'name'  => ['max:64', 'regex:/^[a-zA-ZА-ЯЁа-яё \S]+$/'],
+            'phone' => ['max:32', 'regex:/^[0-9()-+ \S]*$/'],
         ];
     }
 }
