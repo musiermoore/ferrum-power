@@ -25,10 +25,11 @@ class OrderController extends AdminBaseController
     {
         $orders = Order::searchOrdersByQuery($request->query());
 
-        return response()->json([
-            'code'      => 200,
+        $data = [
             'orders'    => OrderCollection::make($orders),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -45,23 +46,18 @@ class OrderController extends AdminBaseController
         $order = Order::find($id);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         $order->update($data);
         $order->save();
 
-        return response()->json([
-            'code'      => 201,
-            'message'   => "Данные заказа №{$order->id} изменены.",
+        $data = [
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
-        ])->setStatusCode(201);
+        ];
+
+        return $this->successResponse(201, "Данные заказа №{$order->id} изменены.", $data);
     }
 
     public function show($id)
@@ -69,19 +65,15 @@ class OrderController extends AdminBaseController
         $order = Order::with('products')->find($id);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
-        return response()->json([
-            'code'      => 200,
+        $data = [
             'order'     => OrderResource::make($order),
             'products'  => OrderProductResource::collection($order->products),
-        ])->setStatusCode(200);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -95,29 +87,16 @@ class OrderController extends AdminBaseController
         $order = Order::find($id);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         if ($order->order_status_id != 3 || $order->order_status_id != 4) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Незавершенный заказ удалить нельзя."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(422, "Незавершенный заказ удалить нельзя.");
         }
 
         $order->delete();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Заказ №{$id} был удален.",
-        ]);
+        return $this->successResponse(200, "Заказ №{$id} был удален.");
     }
 
     public function setOperatorToOrder(Request $request, $orderId)
@@ -125,41 +104,23 @@ class OrderController extends AdminBaseController
         $order = Order::find($orderId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         if (! empty($order->operator_id)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 403,
-                    'message'   => "Заказ уже обрабатывается другим оператором."
-                ],
-            ])->setStatusCode(403);
+            return $this->errorResponse(403, "Заказ уже обрабатывается другим оператором.");
         }
 
         $user = $request->user();
 
         if (! $user->can('set operator')) {
-            return response()->json([
-                'error' => [
-                    'code'      => 403,
-                    'message'   => "Вы не являетесь оператором и не можете принять заказ."
-                ],
-            ])->setStatusCode(403);
+            return $this->errorResponse(403, "Вы не являетесь оператором и не можете принять заказ.");
         }
 
         $order->operator_id = $user->id;
         $order->save();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Оператор назначен для заказа."
-        ]);
+        return $this->successResponse(200, "Оператор назначен для заказа.");
     }
 
     public function unsetOperatorToOrder(Request $request, $orderId)
@@ -167,59 +128,31 @@ class OrderController extends AdminBaseController
         $order = Order::find($orderId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         if (empty($order->operator_id)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 403,
-                    'message'   => "Заказ никем не обрабатывается."
-                ],
-            ])->setStatusCode(403);
+            return $this->errorResponse(403, "Заказ никем не обрабатывается.");
         }
 
         $user = $request->user();
 
         if ($order->operator_id != $user->id && ! $user->hasRole('admin')) {
-            return response()->json([
-                'error' => [
-                    'code'      => 403,
-                    'message'   => "Вы не можете убрать оператора с чужого заказа."
-                ],
-            ])->setStatusCode(403);
+            return $this->errorResponse(403, "Вы не можете убрать оператора с чужого заказа.");
         }
 
         if (($order->order_status_id != 3 || $order->order_status_id != 4) && ! $user->hasRole('admin')) {
-            return response()->json([
-                'error' => [
-                    'code'      => 422,
-                    'message'   => "Вы не можете отказаться от заказа, пока он не завершён."
-                ],
-            ])->setStatusCode(422);
+            return $this->errorResponse(400, "Вы не можете отказаться от заказа, пока он не завершён.");
         }
 
         if (! $user->can('unset operator') && ! $user->hasRole('admin')) {
-            return response()->json([
-                'error' => [
-                    'code'      => 403,
-                    'message'   => "Вы не являетесь оператором и не можете отказаться от заказа."
-                ],
-            ])->setStatusCode(403);
+            return $this->errorResponse(400, "Вы не являетесь оператором и не можете отказаться от заказа.");
         }
 
         $order->operator_id = null;
         $order->save();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Оператор убран с заказа."
-        ]);
+        return $this->successResponse(200, "Оператор снят с заказа.");
     }
 
     public function changeOrderOperator(OrderOperatorChangeRequest $request, $orderId)
@@ -227,31 +160,18 @@ class OrderController extends AdminBaseController
         $order = Order::find($orderId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         $operator = User::find($request->operator_id);
 
         if (empty($operator)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Оператор не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Оператор не найден.");
         }
 
         $order->operator_id = $operator->id;
         $order->save();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Оператор заказа изменен."
-        ]);
+        return $this->successResponse(200, "Оператор заказа изменен.");
     }
 }
