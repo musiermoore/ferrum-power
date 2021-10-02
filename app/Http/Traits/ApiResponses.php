@@ -4,11 +4,6 @@ namespace App\Http\Traits;
 
 trait ApiResponses
 {
-    public function validationErrorResponse()
-    {
-
-    }
-
     public function errorResponse($code, $message)
     {
         $response = [
@@ -26,6 +21,10 @@ trait ApiResponses
             'status' => 'success',
             'code' => $code,
         ];
+
+        if (!empty($data) && empty($message)) {
+            $message = 'Результаты не найдены.';
+        }
 
         if (!empty($message)) {
             $response['message'] = $message;
