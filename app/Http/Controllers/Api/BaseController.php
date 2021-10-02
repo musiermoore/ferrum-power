@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponses;
 
 abstract class BaseController extends Controller
 {
-    //
+    use ApiResponses;
 }
