@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,5 +38,37 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * Convert a validation exception into a JSON response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Validation\ValidationException  $exception
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        $errors = $this->getErrors($exception);
+
+        return response()->json([
+            'status' => "Validation errors",
+            'errors' => $errors,
+        ], $exception->status);
+    }
+
+    private function getErrors(ValidationException $e)
+    {
+        $errors = $e->validator->errors()->getMessages();
+
+        $transformed = [];
+
+        foreach ($errors as $field => $message) {
+            $transformed[$field] = [
+                'message' => $message[0]
+            ];
+        }
+
+        return $transformed;
     }
 }
