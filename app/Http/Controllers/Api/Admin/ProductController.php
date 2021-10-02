@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Support\Str;
 
-class ProductController extends BaseController
+class ProductController extends AdminBaseController
 {
     /**
      * Display a listing of the resource.

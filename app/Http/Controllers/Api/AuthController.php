@@ -6,11 +6,22 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends BaseController
 {
+    public function getUser(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'code'  => 200,
+            'user'  => UserResource::make($user),
+        ]);
+    }
+
     public function register(RegisterRequest $request)
     {
         $data = $request->all();
@@ -41,10 +52,13 @@ class AuthController extends BaseController
             ], 401);
         }
 
+        $token = $user->createToken('Auth Token')->accessToken;
+
+
         return response()->json([
             'code'      => 200,
             'message'   => "Вы успешно вошли в систему.",
-            'token'     => $user->createToken('Auth Token')->accessToken,
+            'token'     => $token,
             'user'      => UserResource::make($user),
         ])->setStatusCode(200);
     }
@@ -52,5 +66,15 @@ class AuthController extends BaseController
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
+    }
+
+    public function check(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'code'  => 200,
+            'token' => $user->tokens()->orderByDesc('id')->first(),
+        ]);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Orders\OrderProductCreateRequest;
 use App\Http\Requests\Orders\OrderProductUpdateRequest;
 use App\Http\Resources\OrderResource;
@@ -11,7 +10,7 @@ use App\Models\Order;
 use App\Models\OrderPrice;
 use App\Models\OrderProduct;
 
-class OrderProductController extends BaseController
+class OrderProductController extends AdminBaseController
 {
     /**
      * Display a listing of the resource.
