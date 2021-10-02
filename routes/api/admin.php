@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::get('/user/login', [\App\Http\Controllers\Api\AuthController::class, 'login'])
-    ->name('user.register');;
-Route::get('/user/logout', [\App\Http\Controllers\Api\AuthController::class, 'login'])
+Route::get('/user/auth', [\App\Http\Controllers\Api\AuthController::class, 'getUser'])
+    ->middleware(['auth:api'])
+    ->name('user.auth');
+Route::post('/user/login', [\App\Http\Controllers\Api\AuthController::class, 'login'])
+    ->name('user.login');;
+Route::post('/user/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'])
     ->middleware('auth:api')
     ->name('user.logout');;
 
@@ -28,7 +28,8 @@ Route::get('/user/logout', [\App\Http\Controllers\Api\AuthController::class, 'lo
  * Admin's routes
  */
 Route::group(['middleware' => ['role:admin']], function () {
-    Route::get('/user/register', [\App\Http\Controllers\Api\AuthController::class, 'register'])->name('user.register');
+    Route::post('/user/register', [\App\Http\Controllers\Api\AuthController::class, 'register'])->name('user.register');
+    Route::get('/roles', [\App\Http\Controllers\Api\RoleController::class, 'getListRoles']);
     Route::group(['prefix' => '/orders/{orderId}'], function () {
         Route::patch('/operator/change', [\App\Http\Controllers\Api\Admin\OrderController::class, 'changeOrderOperator'])
             ->name('orders.operator.change');
@@ -42,6 +43,7 @@ Route::group(['middleware' => ['role:admin|operator']], function () {
     Route::apiResource('/categories', \App\Http\Controllers\Api\Admin\CategoryProductController::class);
     Route::apiResource('/products', \App\Http\Controllers\Api\Admin\ProductController::class);
     Route::apiResource('/orders', \App\Http\Controllers\Api\Admin\OrderController::class)->except('store');
+    Route::apiResource('/users', \App\Http\Controllers\Api\Admin\UserController::class)->except('store');
 
     Route::group(['prefix' => '/orders/{orderId}'], function () {
         Route::apiResource('/products', \App\Http\Controllers\Api\Admin\OrderProductController::class, ['parameters' => [
