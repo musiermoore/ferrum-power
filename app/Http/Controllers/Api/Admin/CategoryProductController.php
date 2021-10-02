@@ -26,7 +26,7 @@ class CategoryProductController extends AdminBaseController
             'categories' => CategoryProductCollection::make($categories),
         ];
 
-        return $this->successResponse(200, $data);
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -55,7 +55,7 @@ class CategoryProductController extends AdminBaseController
             'category'  => CategoryProductResource::make($category),
         ];
 
-        return $this->successResponse(200, $data);
+        return $this->successResponse(200, 'Категория была создана.', $data);
     }
 
     /**
@@ -69,7 +69,7 @@ class CategoryProductController extends AdminBaseController
         $category =  CategoryProduct::find($id);
 
         if (empty($category)) {
-            return $this->errorResponse('Категория не найдена.', 404);
+            return $this->errorResponse(404, 'Категория не найдена.');
         }
 
         $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
@@ -80,7 +80,7 @@ class CategoryProductController extends AdminBaseController
             'products'          => ProductResource::collection($category->products),
         ];
 
-        return $this->successResponse(200, $data);
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -93,7 +93,7 @@ class CategoryProductController extends AdminBaseController
     public function update(CategoryProductUpdateRequest $request, $id)
     {
         if (CategoryProduct::isImmutableCategory($id)) {
-            return $this->errorResponse('Данную категорию изменить нельзя.', 422);
+            return $this->errorResponse(400, 'Данную категорию изменить нельзя.');
         }
 
         $data = $request->all();
@@ -101,11 +101,11 @@ class CategoryProductController extends AdminBaseController
         $category =  CategoryProduct::where('id', $id)->first();
 
         if (empty($category)) {
-            return $this->errorResponse(422, 'Категория не найдена.');
+            return $this->errorResponse(404, 'Категория не найдена.');
         }
 
         if ($category->id == $data["parent_id"]) {
-            return $this->errorResponse(422, 'Категория не должна ссылаться сама на себя.');
+            return $this->errorResponse(400, 'Категория не должна ссылаться сама на себя.');
         }
 
         $checkTitle = CategoryProduct::query()
@@ -144,21 +144,16 @@ class CategoryProductController extends AdminBaseController
     public function destroy($id)
     {
         if (CategoryProduct::isImmutableCategory($id)) {
-            return $this->errorResponse(422, 'Данную категорию удалить нельзя');
+            return $this->errorResponse(400, 'Данную категорию удалить нельзя');
         }
 
         $category =  CategoryProduct::find($id);
 
         if (empty($category)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Категория не найдена."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, 'Категория не найдена.');
         }
 
-        Product::setDefaultCategoryForProduct($id);
+        Product::setDefaultCategoryForProducts($id);
 
         $category->delete();
 

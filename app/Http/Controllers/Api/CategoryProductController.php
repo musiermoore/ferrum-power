@@ -18,10 +18,7 @@ class CategoryProductController extends BaseController
     {
         $categories =  CategoryProduct::all();
 
-        return response()->json([
-            'code'          => 200,
-            'categories'    => CategoryProductCollection::make($categories),
-        ]);
+        return $this->successResponse(200, null, $categories);
     }
 
     /**
@@ -33,22 +30,19 @@ class CategoryProductController extends BaseController
     public function show($id)
     {
         $category =  CategoryProduct::find($id);
-        $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
 
         if (empty($category)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Категория не найдена."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Категория не найдена.");
         }
 
-        return response()->json([
-            'code'              => 200,
+        $childCategories = CategoryProduct::where('parent_id', $category->id)->get();
+
+        $data = [
             'category'          => CategoryProductResource::make($category),
             'child_categories'  => CategoryProductResource::collection($childCategories),
             'products'          => ProductResource::collection($category->products),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }
