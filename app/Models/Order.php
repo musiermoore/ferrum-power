@@ -21,7 +21,8 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'order_products');
+        return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id')
+            ->withPivot(['quantity', 'full_price']);
     }
 
     public function operator()
@@ -45,8 +46,8 @@ class Order extends Model
      */
     public static function searchOrdersByQuery($query)
     {
-        $name = $query["name"];
-        $phone = $query["phone"];
+        $name = $query["name"] ?? null;
+        $phone = $query["phone"] ?? null;
 
         $orders = Order::query()
             ->when($name, function ($query) use ($name) {
