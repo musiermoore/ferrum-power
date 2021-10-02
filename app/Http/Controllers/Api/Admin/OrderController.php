@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Orders\OrderOperatorChangeRequest;
 use App\Http\Requests\Orders\OrderSearchRequest;
 use App\Http\Requests\Orders\OrderUpdateRequest;
 use App\Http\Resources\OrderCollection;
+use App\Http\Resources\OrderProductResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
-class OrderController extends BaseController
+class OrderController extends AdminBaseController
 {
     /**
      * Display a listing of the resource.
@@ -64,6 +62,26 @@ class OrderController extends BaseController
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
         ])->setStatusCode(201);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with('products')->find($id);
+
+        if (empty($order)) {
+            return response()->json([
+                'error' => [
+                    'code'      => 404,
+                    'message'   => "Заказ не найден."
+                ],
+            ])->setStatusCode(404);
+        }
+
+        return response()->json([
+            'code'      => 200,
+            'order'     => OrderResource::make($order),
+            'products'  => OrderProductResource::collection($order->products),
+        ])->setStatusCode(200);
     }
 
     /**
