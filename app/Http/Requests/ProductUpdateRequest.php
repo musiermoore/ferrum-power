@@ -28,7 +28,7 @@ class ProductUpdateRequest extends FormRequest
             'title'                 => ['required', 'string', 'min:2', 'max:128'],
             'slug'                  => ['string', 'min:2', 'max:128'],
             'description'           => ['string', 'max:255'],
-            'image_path'            => ['string'],
+            'image_path'            => ['nullable', 'string'],
             'stock_availability'    => ['required', 'boolean'],
             'price'                 => ['required', 'integer'],
         ];

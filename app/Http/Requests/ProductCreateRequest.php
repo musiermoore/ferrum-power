@@ -26,9 +26,9 @@ class ProductCreateRequest extends FormRequest
         return [
             'category_id'           => ['required', 'exists:category_products,id'],
             'title'                 => ['required', 'string', 'min:2', 'max:128', 'unique:products,title'],
-            'slug'                  => ['string', 'min:2', 'max:128', 'unique:products,slug'],
+            'slug'                  => ['nullable', 'string', 'min:2', 'max:128', 'unique:products,slug'],
             'description'           => ['string', 'max:255'],
-            'image_path'            => ['string'],
+            'image_path'            => ['nullable', 'string'],
             'stock_availability'    => ['required', 'boolean'],
             'price'                 => ['required', 'integer'],
         ];

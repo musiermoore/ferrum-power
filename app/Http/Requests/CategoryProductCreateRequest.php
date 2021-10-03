@@ -28,7 +28,7 @@ class CategoryProductCreateRequest extends FormRequest
             'title'         => ['required', 'string', 'max:128', 'unique:category_products,title'],
             'slug'          => ['nullable', 'string', 'max:128', 'unique:category_products,slug'],
             'description'   => ['string', 'max:255'],
-            'image_path'    => ['string'],
+            'image_path'    => ['nullable', 'string'],
         ];
     }
 }

@@ -28,7 +28,7 @@ class CategoryProductUpdateRequest extends FormRequest
             'title'         => ['required', 'string', 'min:2', 'max:128'],
             'slug'          => ['nullable', 'string', 'min:2', 'max:128'],
             'description'   => ['string', 'max:255'],
-//            'image_path'    => ['string'],
+            'image_path'    => ['nullable', 'string'],
         ];
     }
 }
