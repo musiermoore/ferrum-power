@@ -10,8 +10,10 @@ class RoleController extends BaseController
     {
         $roles = Role::all();
 
-        return response()->json([
+        $data = [
             'roles' => $roles
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }

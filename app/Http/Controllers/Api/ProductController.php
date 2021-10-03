@@ -16,10 +16,11 @@ class ProductController extends BaseController
     {
         $products =  Product::all();
 
-        return response()->json([
-            'code'     => 200,
+        $data = [
             'products' => ProductResource::collection($products),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -33,17 +34,13 @@ class ProductController extends BaseController
         $product =  Product::find($id);
 
         if (empty($product)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Продукт не найден."
-                ],
-            ]);
+            return $this->errorResponse(404, "Продукт не найден.");
         }
 
-        return response()->json([
-            'code'      => 200,
-            'product'  => ProductResource::make($product),
-        ]);
+        $data = [
+            'products' => ProductResource::make($product),
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }

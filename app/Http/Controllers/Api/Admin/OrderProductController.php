@@ -22,19 +22,15 @@ class OrderProductController extends AdminBaseController
         $order = Order::find($orderId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
-        return response()->json([
-            'code'      => 200,
+        $data = [
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
-        ])->setStatusCode(200);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -50,32 +46,23 @@ class OrderProductController extends AdminBaseController
         $order = Order::find($orderId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
         if ($order->products()->where('product_id', $product["product_id"])->first()) {
-            return response()->json([
-                'error' => [
-                    'code'      => 422,
-                    'message'   => "Продукт уже присутствует в заказе."
-                ],
-            ])->setStatusCode(422);
+            return $this->errorResponse(400, "Продукт уже присутствует в заказе.");
         }
 
         OrderProduct::addProductToOrder($order, $product);
         OrderPrice::setPriceToOrder($order);
 
-        return response()->json([
-            'code'      => 201,
-            'message'   => "Товары заказа №{$order->id} изменены. Продукт №{$product["product_id"]} добавлен к заказу.",
+        $data = [
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
-        ])->setStatusCode(201);
+        ];
+
+        $message = "Товары заказа №{$order->id} изменены. Продукт №{$product["product_id"]} добавлен к заказу.";
+        return $this->successResponse(201, $message, $data);
     }
 
     /**
@@ -94,32 +81,23 @@ class OrderProductController extends AdminBaseController
         $product = $order->products()->find($productId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
-        if ($product == null) {
-            return response()->json([
-                'error' => [
-                    'code'      => 422,
-                    'message'   => "Товар №{$productId} не найден в заказе."
-                ],
-            ])->setStatusCode(422);
+        if (empty($product)) {
+            return $this->errorResponse(400, "Товар №{$productId} не найден в заказе.");
         }
 
         OrderProduct::updateProductInOrder($order, $product->id, $quantity);
         OrderPrice::setPriceToOrder($order);
 
-        return response()->json([
-            'code'      => 201,
-            'message'   => "Товары заказа №{$order->id} изменены. Товар №{$product->id} в заказе изменен.",
+        $data = [
             'order'     => OrderResource::make($order),
             'products'  => ProductResource::collection($order->products),
-        ])->setStatusCode(201);
+        ];
+
+        $message = "Товары заказа №{$order->id} изменены. Товар №{$product->id} в заказе изменен.";
+        return $this->successResponse(201, $message, $data);
     }
 
     /**
@@ -135,31 +113,22 @@ class OrderProductController extends AdminBaseController
         $product = $order->products()->find($productId);
 
         if (empty($order)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Заказ не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Заказ не найден.");
         }
 
-        if ($product == null) {
-            return response()->json([
-                'error' => [
-                    'code'      => 422,
-                    'message'   => "Товар №{$productId} не найден в заказе."
-                ],
-            ])->setStatusCode(422);
+        if (empty($product)) {
+            return $this->errorResponse(400, "Товар №{$productId} не найден в заказе.");
         }
 
         OrderProduct::removeProductFromOrder($order, $productId);
         OrderPrice::setPriceToOrder($order);
 
-        return response()->json([
-            'code' => 201,
-            'message' => "Товары заказа №{$order->id} изменены. Продукт №{$product["id"]} удален из заказа.",
+        $data = [
             'order' => OrderResource::make($order),
             'products' => ProductResource::collection($order->products),
-        ])->setStatusCode(201);
+        ];
+
+        $message = "Товары заказа №{$order->id} изменены. Продукт №{$product["id"]} удален из заказа.";
+        return $this->successResponse(200, $message, $data);
     }
 }

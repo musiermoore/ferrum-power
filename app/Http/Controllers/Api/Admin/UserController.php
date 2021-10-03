@@ -16,9 +16,10 @@ class UserController extends AdminBaseController
     {
         $users = User::all();
 
-        return response()->json([
-            'code'       => 200,
+        $data = [
             'users' => UserResource::collection($users),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }

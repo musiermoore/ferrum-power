@@ -34,16 +34,24 @@ class ProductController extends AdminBaseController
     public function store(ProductCreateRequest $request)
     {
         $data = $request->all();
+
         if (empty($request->slug)) {
             $data["slug"] = Str::slug($data["title"]);
         }
 
+        $checkSlug = Product::query()->where('slug', $data["slug"])->exists();
+
+        if ($checkSlug) {
+            return $this->errorResponse(422, "Продукт с такой ссылкой уже существует");
+        }
+
         $product = Product::create($data);
 
-        return response()->json([
-            'code'      => 201,
+        $data = [
             'product'  => ProductResource::make($product),
-        ])->setStatusCode(201);
+        ];
+
+        return $this->successResponse(201, "Продукт создан.", $data);
     }
 
     /**
@@ -57,18 +65,14 @@ class ProductController extends AdminBaseController
         $product =  Product::find($id);
 
         if (empty($product)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Продукт не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Продукт не найден.");
         }
 
-        return response()->json([
-            'code'      => 200,
+        $data = [
             'product'  => ProductResource::make($product),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 
     /**
@@ -85,12 +89,7 @@ class ProductController extends AdminBaseController
         $product =  Product::find($id);
 
         if (empty($product)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Продукт не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Продукт не найден.");
         }
 
         $checkProduct = Product::whereNotIn('id', [$id])
@@ -98,21 +97,13 @@ class ProductController extends AdminBaseController
             ->count();
 
         if ($checkProduct) {
-            return response()->json([
-                'error' => [
-                    'code'      => 422,
-                    'message'   => "Продукт с таким названием уже существует."
-                ],
-            ])->setStatusCode(422);
+            return $this->errorResponse(422, "Продукт с таким названием уже существует.");
         }
 
         $product->update($data);
         $product->save();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Продукт №{$id} был изменен",
-        ]);
+        return $this->successResponse(200, "Продукт №{$id} был изменен.");
     }
 
     /**
@@ -126,19 +117,11 @@ class ProductController extends AdminBaseController
         $product =  Product::find($id);
 
         if (empty($product)) {
-            return response()->json([
-                'error' => [
-                    'code'      => 404,
-                    'message'   => "Продукт не найден."
-                ],
-            ])->setStatusCode(404);
+            return $this->errorResponse(404, "Продукт не найден.");
         }
 
         $product->delete();
 
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Продукт №{$id} был удален.",
-        ]);
+        return $this->successResponse(200, "Продукт №{$id} был удален.");
     }
 }

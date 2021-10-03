@@ -16,9 +16,10 @@ class OrderStatusController extends BaseController
     {
         $statuses = OrderStatus::all();
 
-        return response()->json([
-            'code'      => 200,
-            'product'  => OrderStatusResource::collection($statuses),
-        ]);
+        $data = [
+            'statuses'  => OrderStatusResource::collection($statuses),
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }

@@ -16,10 +16,11 @@ class AuthController extends BaseController
     {
         $user = $request->user();
 
-        return response()->json([
-            'code'  => 200,
-            'user'  => UserResource::make($user),
-        ]);
+        $data = [
+            'user' => UserResource::make($user),
+        ];
+
+        return $this->successResponse(200, "Пользователь создан.", $data);
     }
 
     public function register(RegisterRequest $request)
@@ -30,11 +31,11 @@ class AuthController extends BaseController
         $user = User::create($data);
         $user->assignRole($data["role"]);
 
-        return response()->json([
-            'code'      => 201,
-            'message'   => "Пользователь создан.",
-            'user'      => UserResource::make($user),
-        ])->setStatusCode(201);
+        $data = [
+            'user' => UserResource::make($user),
+        ];
+
+        return $this->successResponse(201, "Пользователь создан.", $data);
     }
 
     public function login(LoginRequest $request)
@@ -44,23 +45,17 @@ class AuthController extends BaseController
         $user = User::where('login', $data['login'])->first();
 
         if ( !$user || !Hash::check($data['password'], $user->password)) {
-            return response()->json([
-                'error' => [
-                    'code'       => 401,
-                    'message'    => "Такого пользователя не существует или введен неверный пароль.",
-                ],
-            ], 401);
+            return $this->errorResponse(401, "Такого пользователя не существует или введен неверный пароль.");
         }
 
         $token = $user->createToken('Auth Token')->accessToken;
 
-
-        return response()->json([
-            'code'      => 200,
-            'message'   => "Вы успешно вошли в систему.",
+        $data = [
             'token'     => $token,
             'user'      => UserResource::make($user),
-        ])->setStatusCode(200);
+        ];
+
+        return $this->successResponse(200, "Вы успешно вошли в систему.", $data);
     }
 
     public function logout(Request $request)
@@ -72,9 +67,10 @@ class AuthController extends BaseController
     {
         $user = $request->user();
 
-        return response()->json([
-            'code'  => 200,
+        $data = [
             'token' => $user->tokens()->orderByDesc('id')->first(),
-        ]);
+        ];
+
+        return $this->successResponse(200, null, $data);
     }
 }
