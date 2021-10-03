@@ -45,7 +45,16 @@ class ProductController extends AdminBaseController
             return $this->errorResponse(422, "Продукт с такой ссылкой уже существует");
         }
 
-        $product = Product::create($data);
+        $product = Product::create([
+            'category_id' => $data['category_id'],
+            'title' => $data['title'],
+            'slug' => $data['slug'],
+            'price' => $data['price'],
+            'stock_availability' => $data['stock_availability'],
+            'description' => $data['description'],
+//            'image_path' => $data['image_path'], // TODO: uncomment this on the vps server
+            'image_path' => 'default.png', // TODO: delete this on the vps server
+        ]);
 
         $data = [
             'product'  => ProductResource::make($product),

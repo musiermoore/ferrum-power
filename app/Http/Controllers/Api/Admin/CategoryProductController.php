@@ -48,7 +48,8 @@ class CategoryProductController extends AdminBaseController
             'title' => $data['title'],
             'slug' => $data['slug'],
             'description' => $data['description'],
-            'image_path' => $data['image_path'],
+//            'image_path' => $data['image_path'], // TODO: uncomment this on the vps server
+            'image_path' => 'default.png', // TODO: delete this on the vps server
         ]);
 
         $data = [
