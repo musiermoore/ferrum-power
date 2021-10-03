@@ -90,7 +90,7 @@ class OrderController extends AdminBaseController
             return $this->errorResponse(404, "Заказ не найден.");
         }
 
-        if ($order->order_status_id != 3 || $order->order_status_id != 4) {
+        if (! ($order->order_status_id != 3 || $order->order_status_id != 4)) {
             return $this->errorResponse(422, "Незавершенный заказ удалить нельзя.");
         }
 
