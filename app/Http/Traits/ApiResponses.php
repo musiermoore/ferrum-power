@@ -31,7 +31,13 @@ trait ApiResponses
         }
 
         if (!empty($data)) {
-            $response['data'] = $data;
+            if (!is_array($data)) {
+                $data = array($data);
+            }
+
+            foreach ($data as $key => $item) {
+                $response[$key] = $item;
+            }
         }
 
         return response()->json($response)->setStatusCode($code);
